@@ -6,8 +6,10 @@ import java.util.*;
 
 public class GameArea{
   private int memorySize;
-  private boolean gameIsStart = false;
-  private Instruction[] memory;
+  private volatile boolean gameIsStart = false;
+  private volatile Instruction[] memory;
+  private List<Player> joeursLst = new ArrayList<Player>();
+  private int[] slot = new int[5];
   private String ljust(String str, int len){
     while(str.length() < len){
       str+= " ";
@@ -15,12 +17,20 @@ public class GameArea{
     return str;
   }
   private void init(){
-    for (int i=0; i<this.memorySize; i++) {
-      if((i%2) == 0){
-        this.memory[i] = new Instruction(null, 0);
-      }else{
-        this.memory[i] = new Instruction(null, 1);
-      }
+    int c = 0;
+    int addr = 0;
+    int quanta = this.memorySize/6;
+    while(c<5){
+      addr = (int)(Math.random()*quanta + 500+quanta*c ) % this.memorySize ;
+      this.slot[c] = addr;
+      c++;
+    }
+  }
+  private void instructionCpy(Player j, int addr){
+    int c=0;
+    for(Instruction i: j.getInstructions()){
+      this.memory[addr+c] = i;
+      c++;
     }
   }
   public GameArea(){
@@ -37,14 +47,35 @@ public class GameArea{
     this.memory= new Instruction[this.memorySize];
     this.init();
   }
-  public void print(){
-    for(int i = 0; i < (this.memorySize/100); i+= 1){
-      System.out.print(this.ljust(String.valueOf(i*100), 4)+": ");
-      //add magie
-      for (int j=0; j<100 ; j++) {
-        this.memory[i*100 + j].print();
-      }
-      System.out.println("");
+  public void addPlayer(Player j){
+    if(this.gameIsStart  == true){
+      System.err.println("Game is already start");
+      System.exit(1);
     }
+    this.joeursLst.add(j);
+  }
+  public String getState(){
+    String ret = new String("");
+    for(int i = 0; i < (this.memorySize/100); i+= 1){
+      ret += this.ljust(String.valueOf(i*100), 4)+": ";
+      //add magie
+      Instruction tmp;
+      for (int j=0; j<100 ; j++) {
+        tmp = this.memory[i*100 + j];
+        if(tmp != null) ret += tmp.getState();
+        else ret+= "O";
+      }
+      ret += "\n";
+    }
+    return ret;
+  }
+  public void print(){
+    System.out.println(this.getState());
+  }
+  public String run(){
+    for(int i=0; i<this.joeursLst.size(); i++){
+      this.instructionCpy(this.joeursLst.get(i), this.slot[i]);
+    }
+    return this.getState();
   }
 }

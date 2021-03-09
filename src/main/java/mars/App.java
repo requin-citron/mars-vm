@@ -13,9 +13,10 @@ public class App
           System.exit(1);
         }
         String path = args[0];
-        // GameArea test = new GameArea();
-        // test.print();
+        GameArea test = new GameArea();
         Player j1 = new Player("/home/poney/script/java/info4B/asm-parser/target/out.cor");
-        j1.baseProcessDebug();
+        test.addPlayer(j1);
+        test.run();
+        test.print();
     }
 }

@@ -10,13 +10,14 @@ public class Player{
   private List<Instruction> baseProcess =  new ArrayList<Instruction>() ;
   private int getLength(Byte fst){
     int tmp = (fst & 0xF0) >> 4;
-    if(tmp ==  0x0 || tmp == 0x4){
+    if(tmp ==  0x0 || tmp == 0x4 || tmp == 0x9){
       return 3;
     }
     return 5;
   }
   //constructeur avec un fichier spécifier
   public Player(String filename){
+    assert this.id_ref < 6;
     id = this.id_ref;
     this.id_ref++;
     try {
@@ -42,5 +43,8 @@ public class Player{
     for(Instruction inst: this.baseProcess){
       inst.debug();
     }
+  }
+  public List<Instruction> getInstructions() {
+    return this.baseProcess;
   }
 }

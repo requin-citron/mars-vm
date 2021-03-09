@@ -31,6 +31,12 @@ public class Instruction{
     "JMG", // 6: transfere l'execution a l'addresse A si le contenue de l'addresse B > 0
     "DJZ", // 7: retranche 1 du contenue de l'addresse B et saute a A si le result ==0
     "CMP", // 8: compare le contenue de l'addresse A et le contenue de l'addresse B si ils sont different sauté a l'instruction suivante
+    "SPL", // 9: fork
+  };
+  private static String[] addrSymb = new String[] {
+    "#", // 0:
+    " ", // 1:
+    "@", // 2:
   };
   private String label;
   private int userId;
@@ -65,33 +71,33 @@ public class Instruction{
         this.operandeB = (conversion[3]&0x3F) << 8;
         this.operandeB += conversion[4];
         this.shortOp = false;
-        if(this.addrBtype != 0x1){
-          this.operandeB = this.processNegetif(this.operandeB);
-        }
+        this.operandeB = this.processNegetif(this.operandeB);
     } else{//3 petite instruction
       this.operandeA = conversion[1]<<6;
       this.operandeA += (conversion[2]&0x3F);
       this.shortOp = true;
     }
-    if(this.addrAtype != 0x1){
-      this.operandeA = this.processNegetif(this.operandeA);
-    }
+    this.operandeA = this.processNegetif(this.operandeA);
   }
   public void printDebug(){
     System.out.println(this.label);
   }
-  public void print(){
+  public String getState(){
+    String ret = new String("");
     if(this.userId<0){
-      System.out.print("O");
-      return;
+      return ret + "0";
     }
-    System.out.print(this.userColor[this.userId] +"O"+this.ANSI_RESET);
+    ret += this.userColor[this.userId-1] +"O"+this.ANSI_RESET;
+    return ret;
+  }
+  public void print(){
+    System.out.print(this.getState());
   }
   public void debug(){
     if(this.shortOp){
       System.out.println(this.label +" "+this.operandeA);
     }else{
-      System.out.println(this.label +" "+this.operandeA + ", "+this.operandeB);
+      System.out.println(this.label +" "+this.addrSymb[this.addrAtype]+this.operandeA + ", "+this.addrSymb[this.addrBtype]+this.operandeB);
     }
 
   }
