@@ -1,9 +1,11 @@
 mars/Instruction.class
 mars/GameArea.class
-Buffer.class
 kleman/viard/ParserFile.class
+mars/Context.class
 Writer.class
 Lecteur.class
+mars/Player.class
+mars/Scheduler.class
+Buffer.class
 mars/App.class
 Buffer_magique.class
-mars/Player.class

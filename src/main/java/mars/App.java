@@ -16,6 +16,9 @@ public class App
         GameArea test = new GameArea();
         Player j1 = new Player("/home/poney/script/java/info4B/asm-parser/target/out.cor");
         test.addPlayer(j1);
+        test.addPlayer(new Player("/home/poney/script/java/info4B/asm-parser/target/out.cor"));
+        test.addPlayer(new Player("/home/poney/script/java/info4B/asm-parser/target/out.cor"));
+        j1.baseProcessDebug();
         test.run();
         test.print();
     }

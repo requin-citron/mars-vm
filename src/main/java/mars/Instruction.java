@@ -78,6 +78,27 @@ public class Instruction{
       this.shortOp = true;
     }
     this.operandeA = this.processNegetif(this.operandeA);
+    if(this.type == 0){
+      this.isValid = false;
+    }
+  }
+  public int getA(){
+    return this.operandeA;
+  }
+  public int getB(){
+    return this.operandeB;
+  }
+  public int getaddrAtype(){
+    return this.addrAtype;
+  }
+  public int getaddrBtype(){
+    return this.addrBtype;
+  }
+  public int getType(){
+    return this.type;
+  }
+  public boolean checkValid(){
+    return this.isValid;
   }
   public void printDebug(){
     System.out.println(this.label);

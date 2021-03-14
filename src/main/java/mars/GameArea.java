@@ -10,6 +10,7 @@ public class GameArea{
   private volatile Instruction[] memory;
   private List<Player> joeursLst = new ArrayList<Player>();
   private int[] slot = new int[5];
+  private Scheduler sched;
   private String ljust(String str, int len){
     while(str.length() < len){
       str+= " ";
@@ -72,9 +73,22 @@ public class GameArea{
   public void print(){
     System.out.println(this.getState());
   }
+  public int nbPlayerAlive(){
+    int c = 0;
+    for (Player p :  this.joeursLst) {
+      if(p.getState()) c++;
+    }
+    return c;
+  }
   public String run(){
+    Collections.shuffle(joeursLst);
     for(int i=0; i<this.joeursLst.size(); i++){
       this.instructionCpy(this.joeursLst.get(i), this.slot[i]);
+    }
+    this.sched = new Scheduler(this.joeursLst, this.memory, this.slot);
+    while(this.nbPlayerAlive()>=1){
+      this.sched.next();
+      this.print();
     }
     return this.getState();
   }

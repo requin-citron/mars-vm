@@ -7,6 +7,7 @@ import java.nio.file.*;
 public class Player{
   private static int id_ref = 1;
   private int id;
+  private boolean state = true;
   private List<Instruction> baseProcess =  new ArrayList<Instruction>() ;
   private int getLength(Byte fst){
     int tmp = (fst & 0xF0) >> 4;
@@ -18,7 +19,7 @@ public class Player{
   //constructeur avec un fichier spécifier
   public Player(String filename){
     assert this.id_ref < 6;
-    id = this.id_ref;
+    this.id = this.id_ref;
     this.id_ref++;
     try {
       byte[] content = Files.readAllBytes(Paths.get(filename));
@@ -37,8 +38,15 @@ public class Player{
     }
   }
   //constructeur avec un soket
-  //
-
+  public void loose(){
+    this.state = false;
+  }
+  public boolean getState(){
+    return this.state;
+  }
+  public int getId(){
+    return this.id;
+  }
   public void baseProcessDebug(){
     for(Instruction inst: this.baseProcess){
       inst.debug();
