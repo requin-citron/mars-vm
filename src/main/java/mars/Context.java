@@ -16,15 +16,13 @@ public class Context{
         if(input < 0){
           int ret = input*-1;
           if(8191 < ret){
-            System.err.println("Value is to big: "+String.valueOf(input));
-            System.exit(1);
+            ret = ret - 8191-1;
           }
           ret = ((~ret)&0x3fff)+1 ;
           return ret;
         }
         if(8191 < input){
-          System.err.println("Value is to big: "+String.valueOf(input));
-          System.exit(1);
+          input = input - 8191-1;
         }
         return input;
     }
@@ -49,11 +47,15 @@ public class Context{
       if(ret<0) ret = this.memory.length + ret;
       return ret;
     }
+
     public Context(Player input, Instruction[] memory, int start){
       this.curr = input;
       this.memory = memory;
       this.threadLst.add(start);
       this.index = 0;
+    }
+    public Player getPlayer(){
+      return this.curr;
     }
     public boolean process(Instruction curri){
       if(curri == null) return false;
@@ -78,6 +80,7 @@ public class Context{
         newA = this.memory[indnewA];
         if(newA==null) return false;
       }
+      indnewA = indnewA % this.memory.length;
 
       //check B
       int indnewB = -1;
@@ -91,17 +94,18 @@ public class Context{
           newB = new Instruction(this.makeDat(curri.getB()), this.curr.getId());
         }
         else if(typeB == 1){// " "
-          indnewB = this.getFromHa(index1);
+          indnewB = this.getFromHa(index1) ;
         }
         else{//@
-          indnewB = this.getFromAt(index1);
+          indnewB = this.getFromAt(index1) ;
           if(indnewB==-1) return false;
         }
+        indnewB = indnewB % this.memory.length;
         newB = this.memory[indnewB];
       }
       if(opcode == 1){ // mov
           if(typeB == 0) return false;
-          this.memory[indnewB] = newA;
+          this.memory[indnewB]  = newA;
       }else if (opcode == 2){ // ADD
           if(typeB == 0) return false;
           if(newA.getType() != 0) return false;
@@ -158,14 +162,19 @@ public class Context{
       System.out.println("DEBUG EXEC + Thread nb "+this.index+" thread size "+this.threadLst.size());
       curr.debug();
       boolean ret = process(curr);
-      if(ret == false && this.threadLst.size() == 0){
-        this.curr.loose();
-        return ret;
-      }else if(ret == false){
+      if(ret == false){
+        System.out.println("remove thread "+this.threadLst.size());
         this.threadLst.remove(this.threadLst.get(this.index));
+        System.out.println("remove thread "+this.threadLst.size());
+        this.index = (this.index)%this.threadLst.size();
+      }else{
+        this.index = (this.index+1)%this.threadLst.size();
       }
-      this.index = (this.index+1)%this.threadLst.size();
-      return ret;
+      if(this.threadLst.size() == 0){
+        this.curr.loose();
+        return false;
+      };
+      return true;
     }
 
 }

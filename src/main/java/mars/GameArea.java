@@ -86,7 +86,8 @@ public class GameArea{
       this.instructionCpy(this.joeursLst.get(i), this.slot[i]);
     }
     this.sched = new Scheduler(this.joeursLst, this.memory, this.slot);
-    while(this.nbPlayerAlive()>=1){
+    while(this.nbPlayerAlive()>1){
+      System.out.println("Nb Alive : "+this.nbPlayerAlive());
       this.sched.next();
       this.print();
     }

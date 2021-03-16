@@ -14,7 +14,7 @@ public class App
         }
         String path = args[0];
         GameArea test = new GameArea();
-        Player j1 = new Player("/home/poney/script/java/info4B/asm-parser/target/out.cor");
+        Player j1 = new Player("/home/poney/script/java/info4B/asm-parser/target/out1.cor");
         test.addPlayer(j1);
         test.addPlayer(new Player("/home/poney/script/java/info4B/asm-parser/target/out.cor"));
         test.addPlayer(new Player("/home/poney/script/java/info4B/asm-parser/target/out.cor"));
