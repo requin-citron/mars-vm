@@ -14,12 +14,13 @@ public class App
         }
         String path = args[0];
         GameArea test = new GameArea();
-        Player j1 = new Player("/home/poney/script/java/info4B/asm-parser/target/out1.cor");
+        Player j1 = new Player("/home/poney/script/java/info4B/asm-parser/target/algo1.cor");
         test.addPlayer(j1);
-        test.addPlayer(new Player("/home/poney/script/java/info4B/asm-parser/target/out.cor"));
-        test.addPlayer(new Player("/home/poney/script/java/info4B/asm-parser/target/out.cor"));
-        j1.baseProcessDebug();
+        test.addPlayer(new Player("/home/poney/script/java/info4B/asm-parser/target/algo2.cor"));
+        //test.addPlayer(new Player("/home/poney/script/java/info4B/asm-parser/target/out.cor"));
+        //j1.baseProcessDebug();
+        test.debug();
         test.run();
-        test.print();
+        //test.print();
     }
 }

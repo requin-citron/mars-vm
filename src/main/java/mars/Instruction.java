@@ -108,7 +108,11 @@ public class Instruction{
     if(this.userId<0){
       return ret + "0";
     }
-    ret += this.userColor[this.userId-1] +"O"+this.ANSI_RESET;
+    if(this.type == 0){
+      ret += this.userColor[this.userId-1] +"#"+this.ANSI_RESET;
+    }else{
+      ret += this.userColor[this.userId-1] +"O"+this.ANSI_RESET;
+    }
     return ret;
   }
   public void print(){
@@ -116,9 +120,9 @@ public class Instruction{
   }
   public void debug(){
     if(this.shortOp){
-      System.out.println(this.label +" "+this.operandeA);
+      System.out.println(this.userColor[this.userId-1]+ this.label +" "+this.operandeA+this.ANSI_RESET);
     }else{
-      System.out.println(this.label +" "+this.addrSymb[this.addrAtype]+this.operandeA + ", "+this.addrSymb[this.addrBtype]+this.operandeB);
+      System.out.println(this.userColor[this.userId-1] + this.label +" "+this.addrSymb[this.addrAtype]+this.operandeA + ", "+this.addrSymb[this.addrBtype]+this.operandeB+this.ANSI_RESET);
     }
 
   }

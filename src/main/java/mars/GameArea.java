@@ -55,7 +55,18 @@ public class GameArea{
     }
     this.joeursLst.add(j);
   }
+  public void debug(){
+    for (int i = 0; i<this.memorySize; i++) {
+      if(this.memory[i] != null){
+        System.out.print(i+": ");
+        this.memory[i].debug();
+      }
+    }
+  }
   public String getState(){
+    // 0 pour case vide
+    // O pour code
+    // # pour dat
     String ret = new String("");
     for(int i = 0; i < (this.memorySize/100); i+= 1){
       ret += this.ljust(String.valueOf(i*100), 4)+": ";
@@ -64,7 +75,7 @@ public class GameArea{
       for (int j=0; j<100 ; j++) {
         tmp = this.memory[i*100 + j];
         if(tmp != null) ret += tmp.getState();
-        else ret+= "O";
+        else ret+= "0";
       }
       ret += "\n";
     }
@@ -85,11 +96,18 @@ public class GameArea{
     for(int i=0; i<this.joeursLst.size(); i++){
       this.instructionCpy(this.joeursLst.get(i), this.slot[i]);
     }
+    this.debug();
     this.sched = new Scheduler(this.joeursLst, this.memory, this.slot);
     while(this.nbPlayerAlive()>1){
       System.out.println("Nb Alive : "+this.nbPlayerAlive());
       this.sched.next();
       this.print();
+    }
+    //DEBUG
+    int c = 0;
+    for(Player p: this.joeursLst){
+      if(p.getState()) System.out.println("Le gagant est Player : "+c);
+      c++;
     }
     return this.getState();
   }

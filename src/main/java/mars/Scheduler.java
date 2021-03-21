@@ -9,7 +9,6 @@ public class Scheduler{
   List<Context> ctxLst = new ArrayList<Context>();
   int timePerPlayer;
   public Scheduler(List<Player> lstj, Instruction[] memory, int[] slot){
-    System.out.println("WTF:"+lstj.size());
     for(int i = 0; i<lstj.size(); i++){
       this.ctxLst.add(new Context(lstj.get(i), memory, slot[i]));
     }

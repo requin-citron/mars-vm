@@ -82,6 +82,9 @@ public class Context{
       }
       indnewA = indnewA % this.memory.length;
 
+
+
+
       //check B
       int indnewB = -1;
       int typeB = -1;
@@ -89,19 +92,23 @@ public class Context{
       Instruction newB = null;
       if(!(opcode == 4 || opcode == 9)){
         typeB = curri.getaddrBtype();
-        index1 = curri.getB();
-        if(typeB == 0){
+        if(typeB == 0){ // "#"
           newB = new Instruction(this.makeDat(curri.getB()), this.curr.getId());
         }
         else if(typeB == 1){// " "
-          indnewB = this.getFromHa(index1) ;
+          index1 = curri.getB();
+          indnewB = this.getFromHa(index1);
+          newB = this.memory[indnewB];
+          if(newB == null && opcode != 1) return false;
         }
         else{//@
+          index1 = curri.getB();
           indnewB = this.getFromAt(index1) ;
-          if(indnewB==-1) return false;
+          if(indnewB == -1) return false;
+          newB = this.memory[indnewB];
+          if(newB == null && opcode != 1) return false;
         }
         indnewB = indnewB % this.memory.length;
-        newB = this.memory[indnewB];
       }
       if(opcode == 1){ // mov
           if(typeB == 0) return false;
@@ -110,7 +117,6 @@ public class Context{
           if(typeB == 0) return false;
           if(newA.getType() != 0) return false;
           this.memory[indnewB] = new Instruction(this.makeDat(newA.getA() + newB.getA()) , this.curr.getId());
-          System.out.println("dat value : "+this.memory[indnewB].getA());
       }else if(opcode == 3){ //SUB
           if(typeB == 0) return false;
           if(newA.getType() != 0) return false;
@@ -119,30 +125,32 @@ public class Context{
           if(this.memory[indnewA].getType() == 0) return false;
           this.threadLst.set(this.index, indnewA);
       }else if(opcode == 5){ // JMZ
-          if(typeB != 0) return false;
+          if(newB.getType() != 0) return false;
           if(this.memory[indnewA].getType() == 0) return false;
           if(newB.getA() == 0){
             this.threadLst.set(this.index, indnewA);
           }
       }else if(opcode == 6){ // JMG
-          if(typeB != 0) return false;
+          if(newB.getType() != 0) return false;
           if(this.memory[indnewA].getType() == 0) return false;
           if(newB.getA() > 0){
             this.threadLst.set(this.index, indnewA);
           }
       }else if(opcode == 7){ // DJZ
-          if(typeB != 0) return false;
+          if(newA.getType() == 0) return false;
+          if(newB.getType() != 0) return false;
           this.memory[indnewB] = new Instruction(this.makeDat(newB.getA()-1 ), this.curr.getId());
           if(this.memory[indnewB].getA() == 0){
-            this.threadLst.set(this.index, newA.getA());
+            this.threadLst.set(this.index, indnewA);
           }
       }else if(opcode == 8){ //CMP
-          if(typeB != 0) return false;
-          if(typeA != 0) return false;
-          if(newB.getA() == newB.getB()){
+          if(newB.getType() != 0) return false;
+          if(newA.getType() != 0) return false;
+          if(newA.getA() == newB.getA()){
             this.threadLst.set(this.index, this.pc+2);
           }
       }else if(opcode == 9){ // FORK
+          //different des autre typeA
           typeA = this.memory[indnewA].getType();
           if(typeA == 0) return false;
           this.threadLst.add(indnewA);
@@ -157,23 +165,23 @@ public class Context{
     public boolean next(){
       this.pc = this.threadLst.get(this.index);
       Instruction curr = this.memory[this.pc];
-      if(curr == null) return false;
-      this.threadLst.set(this.index, this.pc+1);
-      System.out.println("DEBUG EXEC + Thread nb "+this.index+" thread size "+this.threadLst.size());
-      curr.debug();
-      boolean ret = process(curr);
-      if(ret == false){
-        System.out.println("remove thread "+this.threadLst.size());
-        this.threadLst.remove(this.threadLst.get(this.index));
-        System.out.println("remove thread "+this.threadLst.size());
-        this.index = (this.index)%this.threadLst.size();
-      }else{
-        this.index = (this.index+1)%this.threadLst.size();
+      if(curr == null) this.threadLst.remove(this.threadLst.get(this.index));
+      else{
+        this.threadLst.set(this.index, this.pc+1);
+        boolean ret = process(curr);
+        if(ret == false){
+          System.out.println("Failed");
+          this.threadLst.remove(this.threadLst.get(this.index));
+        }else{
+          this.index = (this.index+1)%this.threadLst.size();
+        }
       }
       if(this.threadLst.size() == 0){
         this.curr.loose();
         return false;
       };
+      // to prevent / 0
+      this.index = (this.index)%this.threadLst.size();
       return true;
     }
 
