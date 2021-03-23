@@ -13,7 +13,7 @@ public class Instruction{
   public static final String ANSI_PURPLE = "\u001B[35m";
   public static final String ANSI_CYAN = "\u001B[36m";
   public static final String ANSI_WHITE = "\u001B[37m";
-  private static final String[] userColor = new String[] {
+  public static final String[] userColor = new String[] {
     Instruction.ANSI_RED,
     Instruction.ANSI_GREEN,
     Instruction.ANSI_YELLOW,
@@ -81,6 +81,9 @@ public class Instruction{
     if(this.type == 0){
       this.isValid = false;
     }
+  }
+  public int getId(){
+    return this.userId;
   }
   public int getA(){
     return this.operandeA;

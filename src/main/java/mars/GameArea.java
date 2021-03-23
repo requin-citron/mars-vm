@@ -11,6 +11,10 @@ public class GameArea{
   private List<Player> joeursLst = new ArrayList<Player>();
   private int[] slot = new int[5];
   private Scheduler sched;
+  private int MAX_CLOCK = 10000;
+  private int count = 0;
+  private SharedStuff share;
+  private boolean network = false;
   private String ljust(String str, int len){
     while(str.length() < len){
       str+= " ";
@@ -35,6 +39,13 @@ public class GameArea{
     }
   }
   public GameArea(){
+    this.memorySize = 8000;
+    this.memory= new Instruction[this.memorySize];
+    this.init();
+  }
+  public GameArea(SharedStuff sh){
+    this.share = sh;
+    this.network = true;
     this.memorySize = 8000;
     this.memory= new Instruction[this.memorySize];
     this.init();
@@ -96,18 +107,52 @@ public class GameArea{
     for(int i=0; i<this.joeursLst.size(); i++){
       this.instructionCpy(this.joeursLst.get(i), this.slot[i]);
     }
-    this.debug();
+    String output = "";
+    //this.debug();
     this.sched = new Scheduler(this.joeursLst, this.memory, this.slot);
-    while(this.nbPlayerAlive()>1){
-      System.out.println("Nb Alive : "+this.nbPlayerAlive());
+    this.count = 0;
+    while(this.nbPlayerAlive()>1 && this.count < this.MAX_CLOCK){
+      output = "\033[H\033[2J";
+      output+="Nb Alive : "+this.nbPlayerAlive()+"\n";
+      output+=this.getState();
+      if(this.network==false)System.out.println(output);
+      else this.share.setGameState(output);
       this.sched.next();
-      this.print();
+      this.count++;
     }
-    //DEBUG
-    int c = 0;
-    for(Player p: this.joeursLst){
-      if(p.getState()) System.out.println("Le gagant est Player : "+c);
-      c++;
+    List<Player> winner = new ArrayList<Player>();
+    String chaine = "";
+    if(this.count == this.MAX_CLOCK){
+      int tab[] = new int[this.joeursLst.size()];
+      for(int i = 0; i<tab.length; i++) tab[i]=0;
+      for (Instruction inst : this.memory ) {
+          if(inst != null){
+            tab[inst.getId()-1]++;
+          }
+      }
+      int max = -1;
+    for(int ind = 0; ind<tab.length;ind++){
+      if(tab[ind]>=max){
+        if(tab[ind] != max) winner = new ArrayList<Player>();
+        max = tab[ind];
+        for (Player p : this.joeursLst) {
+          if(p.getId()==ind+1) winner.add(p);
+        }
+      }
+    }
+
+    for (Player p : winner) {
+      chaine = "The winner is: "+Instruction.userColor[p.getId()-1]+p.getName()+Instruction.ANSI_RESET + " avec "+max+"cases";
+      System.out.println(chaine);
+      if(this.network == true) this.share.setGameState(this.share.getGameState()+"\n"+chaine+"\n");
+    }
+    }else{
+      for(Player p: this.joeursLst){
+        if(p.getState()) winner.add(p);
+      }
+      chaine = "The winner is: "+Instruction.userColor[winner.get(0).getId()-1]+winner.get(0).getName()+Instruction.ANSI_RESET;
+      System.out.println(chaine);
+      if(this.network == true) this.share.setGameState(this.share.getGameState()+"\n"+chaine+"\n");
     }
     return this.getState();
   }

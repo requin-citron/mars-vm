@@ -170,7 +170,6 @@ public class Context{
         this.threadLst.set(this.index, this.pc+1);
         boolean ret = process(curr);
         if(ret == false){
-          System.out.println("Failed");
           this.threadLst.remove(this.threadLst.get(this.index));
         }else{
           this.index = (this.index+1)%this.threadLst.size();

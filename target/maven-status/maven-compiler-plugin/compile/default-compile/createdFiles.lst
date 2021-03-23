@@ -4,8 +4,13 @@ kleman/viard/ParserFile.class
 mars/Context.class
 Writer.class
 Lecteur.class
+mars/Network.class
+mars/ClientSockHandler.class
 mars/Player.class
 mars/Scheduler.class
 Buffer.class
+mars/SockToPlayer.class
+mars/AcceptUser.class
+mars/SharedStuff.class
 mars/App.class
 Buffer_magique.class
