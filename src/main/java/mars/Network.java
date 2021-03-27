@@ -29,6 +29,9 @@ class SharedStuff{
   public boolean gameIsRunning(){
     return this.isRunning;
   }
+  synchronized public void changeGameRunning(boolean state){
+    this.isRunning = state;
+  }
 }
 
 class SockToPlayer implements Runnable{
@@ -39,13 +42,19 @@ class SockToPlayer implements Runnable{
     this.cl = sock;
     this.share = magie;
   }
+  private boolean inList(List<Player> lst, String name){
+    for (Player p:lst ) {
+      if(p.getName().equals(name)) return true;
+    }
+    return false;
+  }
   public void run(){
     try {
       OutputStream out;
       DataInputStream in;
       out = this.cl.getOutputStream();
       in = new DataInputStream(new BufferedInputStream(this.cl.getInputStream()));
-      out.write("Entrer: votre pseudo \\n votre code\n".getBytes());
+      out.write(this.share.getGameState().getBytes());
       byte[] value = new byte[4096];
       // on lit max la taille du buffer
       int size = in.read(value, 0, 4096);
@@ -63,6 +72,14 @@ class SockToPlayer implements Runnable{
       for(int i=c; i<size; i++){
         code[i-c] = value[i];
       }
+      //check if pseudo is already taken
+      String magie = "";
+      int counttmp = 1;
+      while(this.inList(this.share.getLstPlayer(), pseudo+magie)){
+        magie = String.valueOf(counttmp);
+        counttmp++;
+      }
+      pseudo = pseudo+magie;
       this.share.add(new Player(this.cl, code, pseudo));
     } catch(Exception e) {
       System.err.println("Error in SockToPlayer");
@@ -127,15 +144,17 @@ class AcceptUser implements Runnable{
     this.gameIsStart = input;
   }
   public void run(){
+    Socket tmp;
+    int c = 0;
+    this.share.setGameState("\033[H\033[2 \nEEntrer: votre pseudo \\n votre code\nnb player: "+(c+1)+"\n");
     try {
-      Socket tmp;
-      int c = 0;
-      while(true){
+      while(this.share.gameIsRunning() == true){
         tmp = this.server.accept();
         if(this.gameIsStart == false && c < 5){
           SockToPlayer magie = new SockToPlayer(tmp, this.share);
           Thread th = new Thread(magie);
           th.start();
+          this.share.setGameState("\033[H\033[2 \nEEntrer: votre pseudo \\n votre code\nnb player: "+(c+1)+"\n");
           c++;
         }else{
           Thread th = new Thread(new ClientSockHandler(tmp, this.share));
@@ -143,8 +162,7 @@ class AcceptUser implements Runnable{
         }
       }
     } catch(Exception e) {
-      System.err.println("Error in AcceptUser");
-      System.exit(1);
+      System.out.println("Server reboot");
     }
   }
 }
@@ -176,5 +194,14 @@ public class Network{
         test.addPlayer(p);
       }
       test.run();
+      this.share.setGameState(this.share.getGameState()+"\nReconnectez vous pour participer a la prochaine game\n");
+      try {
+        Thread.currentThread().sleep(1000);
+      } catch(Exception e) {
+        System.err.println("Error in sleep");
+        System.exit(1);
+      }
+      this.share.changeGameRunning(false);
+      this.server.close();
     }
 }

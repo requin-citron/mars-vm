@@ -145,7 +145,7 @@ public class GameArea{
       chaine = "The winner is: "+Instruction.userColor[p.getId()-1]+p.getName()+Instruction.ANSI_RESET + " avec "+max+"cases";
       System.out.println(chaine);
       if(this.network == true) this.share.setGameState(this.share.getGameState()+"\n"+chaine+"\n");
-    }
+      }
     }else{
       for(Player p: this.joeursLst){
         if(p.getState()) winner.add(p);

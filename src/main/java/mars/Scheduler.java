@@ -22,7 +22,6 @@ public class Scheduler{
             ctx = this.ctxLst.get(i);
             flag = ctx.next();
             if(flag == false){
-              System.out.println("ERROR");
               this.ctxLst.remove(ctx);
               break;
             }

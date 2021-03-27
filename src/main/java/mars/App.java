@@ -6,7 +6,7 @@ package mars;
  */
 public class App
 {
-    public static void main( String[] args ) throws Exception{ 
+    public static void main( String[] args ) throws Exception{
         // if(args.length<1){
         //   System.out.println("Usage: corefile.cor");
         //   System.exit(1);
@@ -21,7 +21,9 @@ public class App
         // test.debug();
         // test.run();
         // //test.print();
-        Network test = new Network(6666);
-
+        while(true){
+          Network test = new Network(6666);
+          Player.reset();
+        }
     }
 }
