@@ -1,12 +1,29 @@
 package mars;
+import org.apache.commons.cli.*;
 
-/**
- * Hello world!
- *
- */
+
 public class App
 {
     public static void main( String[] args ) throws Exception{
+        Options options = new Options();
+        options.addOption("p", "port", true, "Chose port default port is 7070");
+        options.addOption("d", "host", true, "Chose IP default listen on all interfaces");
+        options.addOption("h", "help", false, "Show help");
+        CommandLineParser parser  = new DefaultParser();
+        CommandLine cmd = parser.parse(options, args);
+        if(cmd.hasOption("h")){
+          HelpFormatter formatter = new HelpFormatter();
+          formatter.printHelp("mars-vm", options);
+          System.exit(0);
+        }
+        int port=7070;
+        if(cmd.hasOption("p")){
+          port = Integer.parseInt(cmd.getOptionValue("p"));
+        }
+        String host = "0.0.0.0";
+        if(cmd.hasOption("d")){
+          host = cmd.getOptionValue("d");
+        }
         // if(args.length<1){
         //   System.out.println("Usage: corefile.cor");
         //   System.exit(1);
@@ -21,8 +38,9 @@ public class App
         // test.debug();
         // test.run();
         // //test.print();
+        System.out.println("Server is Up");
         while(true){
-          Network test = new Network(6666);
+          Network test = new Network(host, port);
           Player.reset();
         }
     }

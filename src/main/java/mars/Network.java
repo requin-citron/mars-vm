@@ -174,9 +174,10 @@ public class Network{
     private int port;
     private SharedStuff share = new SharedStuff();
     private AcceptUser accept;
-    public Network(int port) throws IOException{
+    public Network(String host, int port) throws IOException{
       try {
-        this.server = new ServerSocket(port);
+        this.server = new ServerSocket();
+        this.server.bind(new InetSocketAddress(host, port));
         this.accept = new AcceptUser(this.server, this.share);
         Thread serverThread = new Thread(this.accept);
         serverThread.start();
