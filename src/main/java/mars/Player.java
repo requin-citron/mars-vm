@@ -50,7 +50,7 @@ public class Player{
     this.name = name;
     this.curr = curr;
     try {
-      String str = "vos etes :"+Instruction.userColor[this.id-1]+this.name+Instruction.ANSI_RESET;
+      String str = "\nvous etes :"+Instruction.userColor[this.id-1]+this.name+Instruction.ANSI_RESET;
       this.curr.getOutputStream().write(str.getBytes());
       byte[] content = bytecode;
       //parse file

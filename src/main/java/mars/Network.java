@@ -8,7 +8,9 @@ class SharedStuff{
   private List<Player> lst = new ArrayList<Player>();
   private String gameState="";
   private volatile boolean lock=false;
+  private volatile boolean lock1 = false;
   private boolean isRunning=true;
+  private int secondBeforStart = 10;
   public SharedStuff(){
   }
   synchronized  public List<Player> getLstPlayer(){
@@ -16,6 +18,16 @@ class SharedStuff{
   }
   synchronized  public void add(Player pl){
     this.lst.add(pl);
+  }
+  public void setSeconde(int time){
+    this.lock1 = true;
+      System.out.println(time);
+      this.secondBeforStart=time;
+    this.lock1 = false;
+  }
+  public int getSeconde(){
+    while(this.lock1 == true){}
+    return this.secondBeforStart;
   }
   public void setGameState(String game){
     this.lock = true;
@@ -148,13 +160,19 @@ class AcceptUser implements Runnable{
     int c = 0;
     this.share.setGameState("\033[H\033[2 \nEEntrer: votre pseudo \\n votre code\nnb player: "+(c+1)+"\n");
     try {
+      boolean firstTime = true;
       while(this.share.gameIsRunning() == true){
         tmp = this.server.accept();
         if(this.gameIsStart == false && c < 5){
           SockToPlayer magie = new SockToPlayer(tmp, this.share);
           Thread th = new Thread(magie);
           th.start();
-          this.share.setGameState("\033[H\033[2 \nEEntrer: votre pseudo \\n votre code\nnb player: "+(c+1)+"\n");
+          if(firstTime == true){
+            this.share.setGameState("\033[H\033[2 \nEEntrer: votre pseudo \\n votre code\nnb player: "+(c+1)+"\n");
+            firstTime = false;
+          }else{
+            this.share.setGameState("\033[H\033[2 \nEEntrer: votre pseudo \\n votre code\nnb player: "+(c+1)+"\n");
+          }
           c++;
         }else{
           Thread th = new Thread(new ClientSockHandler(tmp, this.share));
@@ -184,7 +202,12 @@ public class Network{
         while(this.share.getLstPlayer().size() < 2 ){
         }
         // on attend 10 seconde et on run la game
-        Thread.currentThread().sleep(10*1000);
+        String prev = this.share.getGameState();
+        for (int i=0; i<10; i++) {
+          Thread.currentThread().sleep(1000);
+          //\r pour clean la ligne
+          this.share.setGameState(prev+"Start dans "+(10-i)+" \n");
+        }
         this.accept.changeState(true);
         System.out.println("The Game going to start");
       } catch(Exception e) {
