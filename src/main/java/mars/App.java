@@ -42,6 +42,11 @@ public class App
         while(true){
           Network test = new Network(host, port);
           Player.reset();
+          try {
+            Thread.currentThread().sleep(1000);
+          } catch(Exception e) {
+            System.err.println("error in sleep after game");
+          }
         }
     }
 }
