@@ -4,7 +4,7 @@ if [[ "$EUID" -ne "0" ]]; then
   exit;
 fi
 #apt-get install -y openjdk-11-jre wget;
-MIRROR="quelafraicheur.info/download/";
+MIRROR="github.com/requin-citron/mars-vm/raw/master/target/";
 OUT_PATH="/usr/share/mars-vm";
 mkdir -p $OUT_PATH;
 echo "$OUT_PATH was created";

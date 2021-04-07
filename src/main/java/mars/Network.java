@@ -34,7 +34,7 @@ class SharedStuff{
     this.gameState = game;
     this.lock = false;
   }
-  synchronized public String getGameState(){
+  public String getGameState(){
     while(this.lock == true){}
     return this.gameState;
   }
