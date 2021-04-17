@@ -40,7 +40,7 @@ public class Context{
       return ret;
     }
     private int getFromAt(int index){
-      Instruction tmp = this.memory[index+this.pc];
+      Instruction tmp = this.memory[(index+this.pc)%this.memory.length];
       if(tmp == null) return -1;
       if(tmp.getType() != 0) return -1;
       int ret = index+this.pc+tmp.getA();

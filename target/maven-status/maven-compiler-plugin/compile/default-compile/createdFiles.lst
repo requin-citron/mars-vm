@@ -1,9 +1,9 @@
-mars/Instruction.class
 mars/GameArea.class
+mars/Instruction.class
 kleman/viard/ParserFile.class
 mars/Context.class
-mars/Network.class
 mars/ClientSockHandler.class
+mars/Network.class
 mars/Player.class
 mars/Scheduler.class
 mars/SockToPlayer.class
